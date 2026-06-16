@@ -56,6 +56,30 @@ pub enum Frame {
 }
 
 impl Frame {
+    const MAX: usize = 8;
+
+    pub fn new(id: impl Into<CanId>, buf: &[u8]) -> Option<Frame> {
+        if buf.len() <= Self::MAX {
+            let mut bytes: [u8; 8] = [0u8; 8];
+            bytes[..buf.len()].copy_from_slice(&buf[..buf.len()]);
+            let dlc = buf.len() as u8;
+
+            let frame = Frame::Data(DataFrame { id: id.into(), data: Data { bytes, len: dlc } });
+            Some(frame)
+        } else {
+            None
+        }
+    }
+
+    pub fn new_remote(id: impl Into<CanId>, dlc: u8) -> Option<Frame> {
+        if (dlc as usize) <= Self::MAX {
+            let frame = Frame::Remote(RemoteFrame { id: id.into(), dlc });
+            Some(frame)
+        } else {
+            None
+        }
+    }
+
     pub fn is_standard(&self) -> bool {
         match self {
             Frame::Data(frame) => frame.id.is_standard(),
