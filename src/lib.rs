@@ -68,6 +68,22 @@ pub enum Frame {
     Remote(RemoteFrame)
 }
 
+impl Frame {
+    pub const fn as_data_frame(&self) -> Option<&DataFrame> {
+        match self {
+            Frame::Data(frame) => Some(frame),
+            Frame::Remote(_) => None,
+        }
+    }
+
+    pub const fn as_remote_frame(&self) -> Option<&RemoteFrame> {
+        match self {
+            Frame::Data(_) => None,
+            Frame::Remote(frame) => Some(frame),
+        }
+    }
+}
+
 impl From<DataFrame> for Frame {
     fn from(frame: DataFrame) -> Self {
         Frame::Data(frame)
