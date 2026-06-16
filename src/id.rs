@@ -51,3 +51,15 @@ impl CanId {
         !self.is_standard()
     }
 }
+
+impl From<StandardId> for CanId {
+    fn from(id: StandardId) -> Self {
+        CanId::Standard(id)
+    }
+}
+
+impl From<ExtendedId> for CanId {
+    fn from(id: ExtendedId) -> Self {
+        CanId::Extended(id)
+    }
+}
