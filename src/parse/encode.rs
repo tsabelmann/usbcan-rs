@@ -36,7 +36,7 @@ impl Encoder<Fixed> {
         buf[idx] = START;
         idx += 1;
 
-        // set end
+        // set header 2
         buf[idx] = fixed::HEADER2;
         idx += 1;
 
