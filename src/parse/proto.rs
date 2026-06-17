@@ -1,5 +1,6 @@
+pub const START: u8 = 0xAA;
+
 pub mod fixed {
-    pub const HEADER1: u8 = super::variable::START;
     pub const HEADER2: u8 = 0x55;
     pub const TYPE:    u8 = 0x01;
     pub const STD:     u8 = 0x01;
@@ -7,12 +8,12 @@ pub mod fixed {
     pub const DATA:    u8 = 0x01;
     pub const REMOTE:  u8 = 0x02;
 
+    pub const CHECKSUM_START: usize = 2;
     pub const RESERVED_IDX: usize = 18;
     pub const CHECKSUM_IDX: usize = 19;
 }
 
 pub mod variable {
-    pub const START:        u8 = 0xAA;
     pub const END:          u8 = 0x55;
     pub const TYPE_MARKER:  u8 = 0b1100_0000;
     pub const RTR_BIT:      u8 = 0b0001_0000;
