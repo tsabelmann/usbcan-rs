@@ -3,6 +3,7 @@ use core::marker::PhantomData;
 
 pub mod decode;
 pub mod encode;
+mod proto;
 
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
