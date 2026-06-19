@@ -1,4 +1,4 @@
-use crate::parse::encode::Encoder;
+use crate::parse::{encode::Encoder, decode::Decoder};
 
 mod sealed {
     pub trait Sealed {}
@@ -11,8 +11,12 @@ impl sealed::Sealed for Fixed {}
 impl Mode for Fixed {}
 
 impl Fixed {
-    pub const fn encoder() -> Encoder<Fixed> {
-        Encoder::<Fixed>::new()
+    pub const fn encoder() -> Encoder<Self> {
+        Encoder::<Self>::new()
+    }
+
+    pub const fn decoder() -> Decoder<Self> {
+        Decoder::<Self>::new()
     }
 }
 
@@ -21,7 +25,11 @@ impl sealed::Sealed for Variable {}
 impl Mode for Variable {}
 
 impl Variable {
-    pub const fn encoder() -> Encoder<Variable> {
-        Encoder::<Variable>::new()
+    pub const fn encoder() -> Encoder<Self> {
+        Encoder::<Self>::new()
+    }
+
+    pub const fn decoder() -> Decoder<Self> {
+        Decoder::<Self>::new()
     }
 }
