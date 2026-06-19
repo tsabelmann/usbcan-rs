@@ -2,6 +2,9 @@ use crate::{frame::Frame, id::CanId, mode::{Fixed, Mode, Variable}, parse::Frame
 use crate::parse::proto::{START, fixed, variable};
 use core::marker::PhantomData;
 
+pub trait Encode {
+    fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError>;
+}
 
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -14,12 +17,14 @@ pub struct Encoder<M: Mode> {
     _mode: PhantomData<M>
 }
 
-impl Encoder<Fixed> {
-    pub(crate) const fn new() -> Encoder<Fixed> {
+impl<M: Mode> Encoder<M> {
+    pub(crate) const fn new() -> Encoder<M> {
         Encoder { _mode: PhantomData }
     }
+}
 
-    pub fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError> {
+impl Encode for Encoder<Fixed> {
+    fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError> {
         let size = FrameSizeIndicator::<Fixed>::size(frame);
         if buf.len() < size {
             return Err(EncoderError::BufferTooSmall { expected: size, provided: buf.len() });
@@ -99,12 +104,8 @@ impl Encoder<Fixed> {
     }   
 }
 
-impl Encoder<Variable> {
-    pub(crate) const fn new() -> Encoder<Variable> {
-        Encoder { _mode: PhantomData }
-    }
-
-    pub fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError> {
+impl Encode for Encoder<Variable> {
+    fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError> {
         let size = FrameSizeIndicator::<Variable>::size(frame);
         if buf.len() < size {
             return Err(EncoderError::BufferTooSmall { expected: size, provided: buf.len() });

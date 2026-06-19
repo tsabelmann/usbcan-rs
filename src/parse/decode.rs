@@ -10,11 +10,8 @@ pub enum DecoderError {
     InvalidFrame
 }
 
-mod sealed {
-    use super::*;
-    pub trait PushDecode {
-        fn push(&mut self, byte: u8) -> Result<Option<Frame>, DecoderError>;
-    }
+pub trait PushDecode {
+    fn push(&mut self, byte: u8) -> Result<Option<Frame>, DecoderError>;
 }
 
 pub struct Decoder<M: Mode> {
@@ -36,7 +33,7 @@ impl Decoder<Fixed> {
     }
 }
 
-impl sealed::PushDecode for Decoder<Fixed> {
+impl PushDecode for Decoder<Fixed> {
     fn push(&mut self, byte: u8) -> Result<Option<Frame>, DecoderError> {
         Decoder::<Fixed>::push(self, byte)
     }
@@ -160,7 +157,7 @@ impl Decoder<Variable> {
     }
 }
 
-impl sealed::PushDecode for Decoder<Variable> {
+impl PushDecode for Decoder<Variable> {
     fn push(&mut self, byte: u8) -> Result<Option<Frame>, DecoderError> {
         Decoder::<Variable>::push(self, byte)
     }
@@ -168,7 +165,7 @@ impl sealed::PushDecode for Decoder<Variable> {
 
 pub struct Frames<'a, M: Mode>
 where 
-    Decoder<M>: sealed::PushDecode
+    Decoder<M>: PushDecode
 {
     decoder: &'a mut Decoder<M>,
     input: &'a [u8],
@@ -177,12 +174,10 @@ where
 
 impl<M: Mode> Iterator for Frames<'_, M> 
 where 
-    Decoder<M>: sealed::PushDecode    
+    Decoder<M>: PushDecode    
 {
     type Item = Result<Frame, DecoderError>;
-    fn next(&mut self) -> Option<Self::Item> {
-        use sealed::PushDecode;
-        
+    fn next(&mut self) -> Option<Self::Item> {       
         while let Some(&byte) = self.input.get(self.pos) {
             self.pos += 1;
             match self.decoder.push(byte) {
@@ -197,7 +192,7 @@ where
 
 impl<M: Mode> Decoder<M>
 where 
-    Decoder<M>: sealed::PushDecode
+    Decoder<M>: PushDecode
 {
     pub fn decode_slice<'a>(&'a mut self, input: &'a [u8]) -> Frames<'a, M> {
         Frames { decoder: self, input, pos: 0 }
