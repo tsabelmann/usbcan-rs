@@ -1,10 +1,16 @@
 use crate::id::CanId;
-use core::ops::{Index, IndexMut};
+use core::{fmt::Debug, ops::{Index, IndexMut}};
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(PartialEq, Eq, Clone)]
 pub struct DataFrame {
     pub id: CanId,
     pub data: Data
+}
+
+impl Debug for DataFrame {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "DataFrame {{ id: {:?}, id: {:?}, data: {:02X?} }}", &self.id, &self.data.len, &self.data.bytes[..self.data.len as usize])
+    }
 }
 
 impl Index<usize> for DataFrame {
@@ -43,13 +49,19 @@ impl IndexMut<usize> for Data {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub struct RemoteFrame { 
     pub id: CanId, 
     pub dlc: u8 
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+impl Debug for RemoteFrame {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "RemoteFrame {{ id: {:?}, id: {:?} }}", &self.id, &self.dlc)
+    }
+}
+
+#[derive(PartialEq, Eq, Clone)]
 pub enum Frame {
     Data(DataFrame),
     Remote(RemoteFrame)
@@ -131,6 +143,15 @@ impl Frame {
         match self {
             Frame::Data(_) => None,
             Frame::Remote(frame) => Some(frame),
+        }
+    }
+}
+
+impl Debug for Frame {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::Data(frame) => frame.fmt(f),
+            Self::Remote(frame) => frame.fmt(f),
         }
     }
 }
