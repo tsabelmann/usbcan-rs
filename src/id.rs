@@ -1,7 +1,7 @@
 use core::fmt::Debug;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
-pub struct StandardId(u16);
+pub struct StandardId(pub(crate)u16);
 
 impl StandardId {
     pub const MAX: u16 = 0x7FF;
@@ -26,7 +26,7 @@ impl Debug for StandardId {
 }
 
 #[derive(PartialEq, Eq, Clone, Copy)]
-pub struct ExtendedId(u32);
+pub struct ExtendedId(pub(crate)u32);
 
 impl ExtendedId {
     pub const MAX: u32 = 0x1FFF_FFFF;
