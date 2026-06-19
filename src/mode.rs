@@ -25,11 +25,11 @@ impl sealed::Sealed for Variable {}
 impl Mode for Variable {}
 
 impl Variable {
-    pub const fn encoder() -> Encoder<Self> {
+    pub const fn encoder() -> Encoder<Variable> {
         Encoder::<Self>::new()
     }
 
-    pub const fn decoder() -> Decoder<Self> {
+    pub const fn decoder() -> Decoder<Variable> {
         Decoder::<Self>::new()
     }
 }
