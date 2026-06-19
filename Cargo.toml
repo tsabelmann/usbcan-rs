@@ -5,3 +5,9 @@ edition = "2024"
 
 [dependencies]
 embedded-can = "0.4.1"
+embedded-io = { version = "0.7.1", default-features = false }
+embedded-io-async = { version = "0.7.0", default-features = false }
+
+[features]
+default = []
+std = ["embedded-io/std", "embedded-io-async/std"]
