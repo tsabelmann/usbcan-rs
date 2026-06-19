@@ -1,4 +1,6 @@
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+use core::fmt::Debug;
+
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub struct StandardId(u16);
 
 impl StandardId {
@@ -17,7 +19,13 @@ impl StandardId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+impl Debug for StandardId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{:>03X}", self.0)
+    }
+}
+
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub struct ExtendedId(u32);
 
 impl ExtendedId {
@@ -36,10 +44,25 @@ impl ExtendedId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+impl Debug for ExtendedId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{:>08X}", self.0)
+    }
+}
+
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum CanId {
     Standard(StandardId),
     Extended(ExtendedId)
+}
+
+impl Debug for CanId {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::Standard(id) => write!(f, "{:?}", id),
+            Self::Extended(id) => write!(f, "{:?}", id)
+        }
+    }
 }
 
 impl CanId {
