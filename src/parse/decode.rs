@@ -112,7 +112,7 @@ impl Decoder<Variable> {
 
     fn expected_len(&self) -> Option<usize> {
         if self.len < 2 {
-            return None;
+            None
         } else {
             let type_byte = self.buf[1];
             
