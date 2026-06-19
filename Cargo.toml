@@ -9,5 +9,8 @@ embedded-io = { version = "0.7.1", default-features = false }
 embedded-io-async = { version = "0.7.0", default-features = false }
 
 [features]
-default = []
+default = ["std"]
 std = ["embedded-io/std", "embedded-io-async/std"]
+
+[dev-dependencies]
+embedded-io-adapters = { version = "0.7.0", features = ["std"] }
