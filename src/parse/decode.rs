@@ -23,11 +23,13 @@ pub struct Decoder<M: Mode> {
     _mode: PhantomData<M>
 }
 
-impl Decoder<Fixed> {
-    pub(crate) const fn new() -> Decoder<Fixed> {
+impl<M: Mode> Decoder<M> {
+    pub(crate) const fn new() -> Decoder<M> {
         Decoder { buf: [0x00; 20], len: 0, _mode: PhantomData }
     }
+}
 
+impl Decoder<Fixed> {
     #[allow(unused)]
     pub fn push(&mut self, byte: u8) -> Result<Option<Frame>, DecoderError> {
         Ok(None)
@@ -41,10 +43,6 @@ impl sealed::PushDecode for Decoder<Fixed> {
 }
 
 impl Decoder<Variable> {
-    pub(crate) const fn new() -> Decoder<Variable> {
-        Decoder { buf: [0x00; 20], len: 0, _mode: PhantomData }
-    }
-    
     pub fn push(&mut self, byte: u8) -> Result<Option<Frame>, DecoderError> {
         // resync 
         if self.len == 0 {
