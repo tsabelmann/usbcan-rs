@@ -5,6 +5,7 @@
 #[macro_use]
 extern crate std;
 
+pub mod config;
 pub mod frame;
 pub mod id;
 pub mod interface;
