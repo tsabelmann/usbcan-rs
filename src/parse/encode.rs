@@ -2,10 +2,9 @@ use crate::{frame::Frame, id::CanId, mode::{Fixed, Mode, Variable}, parse::Frame
 use crate::parse::proto::{START, fixed, variable};
 use core::marker::PhantomData;
 
-pub trait Encode {
-    fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError>;
+pub trait Encode<T> {
+    fn encode(&self, frame: &T, buf: &mut [u8]) -> Result<usize, EncoderError>;
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
@@ -23,7 +22,7 @@ impl<M: Mode> Encoder<M> {
     }
 }
 
-impl Encode for Encoder<Fixed> {
+impl Encode<Frame> for Encoder<Fixed> {
     fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError> {
         let size = FrameSizeIndicator::<Fixed>::size(frame);
         if buf.len() < size {
@@ -104,7 +103,7 @@ impl Encode for Encoder<Fixed> {
     }   
 }
 
-impl Encode for Encoder<Variable> {
+impl Encode<Frame> for Encoder<Variable> {
     fn encode(&self, frame: &Frame, buf: &mut [u8]) -> Result<usize, EncoderError> {
         let size = FrameSizeIndicator::<Variable>::size(frame);
         if buf.len() < size {
