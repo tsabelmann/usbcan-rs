@@ -1,7 +1,7 @@
 use std::{io::Read, net::{Ipv4Addr, SocketAddr, TcpStream}, thread::sleep, time::{self, Duration}};
 
 use embedded_io_adapters::std::FromStd;
-use usbcan::{frame::Frame, id::{CanId, ExtendedId}, mode::Variable};
+use usbcan::{config::Config, frame::Frame, id::{CanId, ExtendedId}, mode::Variable};
 use usbcan::interface::Interface;
 
 fn main() {
@@ -29,15 +29,25 @@ fn main() {
     
     let my_frame = Frame::new(CanId::Extended(ExtendedId::new(0x11223345).unwrap()), &[0x11, 0x22, 0x33, 0x44]).unwrap();
     
-    loop {
-        // if let Ok(frame) = interface.recv() {
-        //     println!("{:?}", frame);
-        // }
+    let config = Config {
+        baud: usbcan::config::Baudrate::Baud500K,
+        frame_type: usbcan::config::FrameType::Standard,
+        op_mode: usbcan::config::OpMode::Normal,
+        filter_id: 0,
+        filter_mask: 0,
+    };
 
-        match interface.try_send(&my_frame) {
-            Ok(_) => println!("Ok"),
-            Err(err) => println!("{:?}", err),
+
+    let _ = interface.configure(config);
+    loop {
+        if let Ok(frame) = interface.recv() {
+            println!("{:?}", frame);
         }
-        sleep(Duration::from_secs(1));
+
+        // match interface.try_send(&my_frame) {
+        //     Ok(_) => println!("Ok"),
+        //     Err(err) => println!("{:?}", err),
+        // }
+        // sleep(Duration::from_secs(1));
     }
 }
