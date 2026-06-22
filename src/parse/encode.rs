@@ -1,9 +1,9 @@
-use crate::{frame::Frame, id::CanId, mode::{Fixed, Mode, Variable}, parse::FrameSizeIndicator};
+use crate::{frame::Frame, config::Config, id::CanId, mode::{Fixed, Mode, Variable}, parse::FrameSizeIndicator};
 use crate::parse::proto::{START, fixed, variable};
 use core::marker::PhantomData;
 
 pub trait Encode<T> {
-    fn encode(&self, frame: &T, buf: &mut [u8]) -> Result<usize, EncoderError>;
+    fn encode(&self, value: &T, buf: &mut [u8]) -> Result<usize, EncoderError>;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -164,4 +164,35 @@ impl Encode<Frame> for Encoder<Variable> {
 
         Ok(idx)
     }   
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub struct ConfigEncoder;
+
+impl Encode<Config> for ConfigEncoder {
+    fn encode(&self, value: &Config, buf: &mut [u8]) -> Result<usize, EncoderError> {
+        let size = buf.len();
+        if size < 20 {
+            return Err(EncoderError::BufferTooSmall { expected: 20, provided: size })
+        }
+
+        // clear buf
+        let size = 20;
+        buf[..size].iter_mut().for_each(|b| *b = 0);
+
+        // encode config
+        buf[0] = 0xAA;
+        buf[1] = 0x55;
+        buf[2] = 0x12;
+        buf[3] = value.baud as u8;
+        buf[4] = value.frame_type as u8;
+        buf[5..9].copy_from_slice(&value.filter_id.to_le_bytes());
+        buf[9..13].copy_from_slice(&value.filter_mask.to_le_bytes());
+        buf[13] = value.op_mode as u8;
+        buf[14] = 0x01;
+        // f[15..19] reserved = 0
+        buf[19] = buf[2..19].iter().fold(0u8, |acc, &b| acc.wrapping_add(b));
+
+        Ok(20)
+    }
 }
