@@ -41,21 +41,3 @@ pub struct Config {
     pub filter_id: u32,
     pub filter_mask: u32
 }
-
-impl Config {
-    pub fn to_command(self) -> [u8; 20] {
-        let mut f = [0u8; 20];
-        f[0] = 0xAA;
-        f[1] = 0x55;
-        f[2] = 0x12;
-        f[3] = self.baud as u8;
-        f[4] = self.frame_type as u8;
-        f[5..9].copy_from_slice(&self.filter_id.to_le_bytes());
-        f[9..13].copy_from_slice(&self.filter_mask.to_le_bytes());
-        f[13] = self.op_mode as u8;
-        f[14] = 0x01;
-        // f[15..19] reserviert = 0
-        f[19] = f[2..19].iter().fold(0u8, |acc, &b| acc.wrapping_add(b));
-        f
-    }
-}
