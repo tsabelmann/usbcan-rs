@@ -75,10 +75,10 @@ where
 
     pub fn try_send(&mut self, frame: &Frame) -> Result<(), InterfaceError<T::Error>> {
         let n = self.encoder.encode(frame, &mut self.send_buf).map_err(InterfaceError::Encode)?;
-        println!("buf = {:#02X?}", &self.send_buf[..n]);
-        println!("n = {:?}", n);
+        // println!("buf = {:#02X?}", &self.send_buf[..n]);
+        // println!("n = {:?}", n);
         let n = self.io.write(&self.send_buf[..n]).map_err(InterfaceError::Io);
-        println!("send = {:?}", n);
+        // println!("send = {:?}", n);
         Ok(())
     }
 
